@@ -1,14 +1,15 @@
 import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
+import { createRoot } from "react-dom/client";   // مهم جداً — انت نسيته
 import "./index.css";
 import App from "./App.jsx";
 
 import {
-  createBrowserRouter,
+  createHashRouter,
   createRoutesFromElements,
   Route,
   RouterProvider,
 } from "react-router-dom";
+
 import Dashboard from "./pages/dashboard/Dashboard";
 import Team from "./pages/team/Team";
 import Contacts from "./pages/contacts/Contacts";
@@ -22,28 +23,24 @@ import Geography from "./pages/geography/Geography";
 import Form from "./pages/form/Form";
 import Profile from "./pages/profile/Profile";
 
-const router = createBrowserRouter(
+const router = createHashRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
+      <Route index element={<Dashboard />} />
       <Route path="profile" element={<Profile />} />
       <Route path="form" element={<Form />} />
-      <Route index element={<Dashboard />} />
       <Route path="team" element={<Team />} />
       <Route path="contacts" element={<Contacts />} />
       <Route path="invoices" element={<Invoices />} />
       <Route path="calendar" element={<Calendar />} />
-      <Route path="FAQ" element={<FAQ />} />
+      <Route path="faq" element={<FAQ />} />
       <Route path="bar" element={<Bar />} />
       <Route path="pie" element={<Pie />} />
       <Route path="line" element={<Line />} />
       <Route path="geography" element={<Geography />} />
     </Route>
-  ),
-  {
-    basename: "/Dashboard", // اسم الريبو على GitHub
-  }
+  )
 );
-
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
