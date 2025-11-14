@@ -27,8 +27,9 @@ import {
   DialogActions,
   TextField,
   Snackbar,
-  Alert
+  Alert,
 } from "@mui/material";
+
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import LogoutIcon from "@mui/icons-material/Logout";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
@@ -42,22 +43,33 @@ import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
 
 export default function Profile({ onToggleTheme, onLogout }) {
   // ========= 1) بيانات المستخدم (قابلة للتعديل) =========
+
+  const defaultUser = {
+    name: "Mohamed Ali",
+    email: "m.ali@example.com",
+    phone: "+20 100 000 0000",
+    role: "Member",
+    status: "Online",
+    avatar: "",
+    storagePct: 42,
+    used: "4.2GB",
+    quota: "10GB",
+    lastLoginISO: new Date().toISOString(),
+  };
+
   const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem("profile_user");
-    return (
-      JSON.parse(saved) || {
-        name: "Mohamed Ali",
-        email: "m.ali@example.com",
-        phone: "+20 100 000 0000",
-        role: "Member",
-        status: "Online",
-        avatar: "",
-        storagePct: 42,
-        used: "4.2GB",
-        quota: "10GB",
-        lastLoginISO: new Date().toISOString()
-      }
-    );
+    try {
+      const saved = localStorage.getItem("profile_user");
+      if (!saved) return defaultUser;
+
+      const parsed = JSON.parse(saved);
+
+      // ندمج عشان لو فيه بيانات ناقصة/قديمة
+      return { ...defaultUser, ...parsed };
+    } catch (e) {
+      console.warn("Failed to parse profile_user from localStorage:", e);
+      return defaultUser;
+    }
   });
 
   useEffect(() => {
@@ -66,14 +78,29 @@ export default function Profile({ onToggleTheme, onLogout }) {
 
   // ========= 2) تفضيلات (سويتشات) مع حفظ =========
   const [prefs, setPrefs] = useState(() => {
-    const saved = localStorage.getItem("profile_prefs");
-    return (
-      JSON.parse(saved) || {
+    try {
+      const saved = localStorage.getItem("profile_prefs");
+      if (!saved)
+        return {
+          emailNotifs: true,
+          twoFA: false,
+          autoSave: true,
+        };
+      const parsed = JSON.parse(saved);
+      return {
         emailNotifs: true,
         twoFA: false,
-        autoSave: true
-      }
-    );
+        autoSave: true,
+        ...parsed,
+      };
+    } catch (e) {
+      console.warn("Failed to parse profile_prefs from localStorage:", e);
+      return {
+        emailNotifs: true,
+        twoFA: false,
+        autoSave: true,
+      };
+    }
   });
 
   useEffect(() => {
@@ -82,13 +109,16 @@ export default function Profile({ onToggleTheme, onLogout }) {
 
   // ========= 3) وقت آخر دخول + ساعة حية =========
   const [now, setNow] = useState(Date.now());
+
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(id);
   }, []);
 
   const relativeLastLogin = useMemo(() => {
-    const diffSec = Math.floor((now - new Date(user.lastLoginISO).getTime()) / 1000);
+    const diffSec = Math.floor(
+      (now - new Date(user.lastLoginISO).getTime()) / 1000
+    );
     const mins = Math.floor(diffSec / 60);
     const hours = Math.floor(mins / 60);
     const days = Math.floor(hours / 24);
@@ -100,34 +130,50 @@ export default function Profile({ onToggleTheme, onLogout }) {
 
   // ========= 4) Dialog تعديل الملف =========
   const [editOpen, setEditOpen] = useState(false);
-  const [form, setForm] = useState({ name: user.name, email: user.email, phone: user.phone, avatar: user.avatar });
+  const [form, setForm] = useState({
+    name: user.name,
+    email: user.email,
+    phone: user.phone,
+    avatar: user.avatar,
+  });
+
   const openEdit = () => {
-    setForm({ name: user.name, email: user.email, phone: user.phone, avatar: user.avatar });
+    setForm({
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      avatar: user.avatar,
+    });
     setEditOpen(true);
   };
+
+  // ========= 5) Snackbar للتأكيدات =========
+  const [snack, setSnack] = useState({
+    open: false,
+    msg: "",
+    sev: "success",
+  });
+
+  const notify = (msg, sev = "success") =>
+    setSnack({ open: true, msg, sev });
+  const closeSnack = () => setSnack((prev) => ({ ...prev, open: false }));
+
   const saveEdit = () => {
     setUser((u) => ({ ...u, ...form }));
     setEditOpen(false);
     notify("Profile updated");
   };
 
-  // ========= 5) Snackbar للتأكيدات =========
-  const [snack, setSnack] = useState({ open: false, msg: "", sev: "success" });
-  const notify = (msg, sev = "success") => setSnack({ open: true, msg, sev });
-  const closeSnack = () => setSnack({ ...snack, open: false });
-
   // ========= 6) Toggle Theme مضمون =========
   const handleToggleTheme = () => {
     if (typeof onToggleTheme === "function") {
-      onToggleTheme(); // لو واصّلها من فوق (اختياري)
+      onToggleTheme();
       notify("Theme toggled");
     } else {
-      // حل عام: نخزّن ونحمّل الثيم عندك من ThemeProvider (بما إنك بتقرأه من localStorage أصلاً)
       const cur = localStorage.getItem("currentMode") || "light";
       const next = cur === "dark" ? "light" : "dark";
       localStorage.setItem("currentMode", next);
       notify(`Theme: ${next}`);
-      // لو الثيم بيتقري عند بداية التطبيق، نعمل refresh لتطبيقه فورًا:
       setTimeout(() => window.location.reload(), 300);
     }
   };
@@ -137,7 +183,6 @@ export default function Profile({ onToggleTheme, onLogout }) {
     if (typeof onLogout === "function") {
       onLogout();
     } else {
-      // نظّف أشياء بسيطة
       localStorage.removeItem("auth_token");
       notify("Logged out");
     }
@@ -180,12 +225,22 @@ export default function Profile({ onToggleTheme, onLogout }) {
                   <Chip size="small" color="success" label={user.status} />
                 </Stack>
 
-                <Stack direction="row" spacing={1} alignItems="center" sx={{ mt: 1, color: "text.secondary" }}>
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  alignItems="center"
+                  sx={{ mt: 1, color: "text.secondary" }}
+                >
                   <EmailOutlinedIcon fontSize="small" />
                   <Typography variant="body2">{user.email}</Typography>
                 </Stack>
 
-                <Stack direction="row" spacing={1} alignItems="center" sx={{ mt: 0.5, color: "text.secondary" }}>
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  alignItems="center"
+                  sx={{ mt: 0.5, color: "text.secondary" }}
+                >
                   <PhoneIphoneOutlinedIcon fontSize="small" />
                   <Typography variant="body2">{user.phone}</Typography>
                 </Stack>
@@ -193,7 +248,12 @@ export default function Profile({ onToggleTheme, onLogout }) {
 
               {/* التخزين */}
               <Box sx={{ mt: 3 }}>
-                <Stack direction="row" spacing={1} alignItems="center" mb={0.5}>
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  alignItems="center"
+                  mb={0.5}
+                >
                   <StorageOutlinedIcon fontSize="small" />
                   <Typography variant="caption" color="text.secondary">
                     Storage
@@ -219,7 +279,11 @@ export default function Profile({ onToggleTheme, onLogout }) {
                 borderTop: (t) => `1px solid ${t.palette.divider}`,
               }}
             >
-              <Button variant="contained" startIcon={<EditOutlinedIcon />} onClick={openEdit}>
+              <Button
+                variant="contained"
+                startIcon={<EditOutlinedIcon />}
+                onClick={openEdit}
+              >
                 Edit Profile
               </Button>
               <IconButton color="error" onClick={handleLogout}>
@@ -246,19 +310,27 @@ export default function Profile({ onToggleTheme, onLogout }) {
             <CardContent>
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
-                  <Typography variant="overline" color="text.secondary">Name</Typography>
+                  <Typography variant="overline" color="text.secondary">
+                    Name
+                  </Typography>
                   <Typography variant="body1">{user.name}</Typography>
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <Typography variant="overline" color="text.secondary">Email</Typography>
+                  <Typography variant="overline" color="text.secondary">
+                    Email
+                  </Typography>
                   <Typography variant="body1">{user.email}</Typography>
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <Typography variant="overline" color="text.secondary">Role</Typography>
+                  <Typography variant="overline" color="text.secondary">
+                    Role
+                  </Typography>
                   <Typography variant="body1">{user.role}</Typography>
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <Typography variant="overline" color="text.secondary">Exact time</Typography>
+                  <Typography variant="overline" color="text.secondary">
+                    Exact time
+                  </Typography>
                   <Stack direction="row" spacing={1} alignItems="center">
                     <AccessTimeOutlinedIcon fontSize="small" />
                     <Typography variant="body1">
@@ -274,7 +346,10 @@ export default function Profile({ onToggleTheme, onLogout }) {
           <Grid container spacing={3} sx={{ mt: 1 }}>
             <Grid item xs={12} md={6}>
               <Card sx={{ borderRadius: 3 }} elevation={4}>
-                <CardHeader title="Preferences" subheader="Personalize your experience" />
+                <CardHeader
+                  title="Preferences"
+                  subheader="Personalize your experience"
+                />
                 <Divider />
                 <CardContent>
                   <Stack spacing={1}>
@@ -284,7 +359,11 @@ export default function Profile({ onToggleTheme, onLogout }) {
                           checked={prefs.emailNotifs}
                           onChange={(_, v) => {
                             setPrefs((p) => ({ ...p, emailNotifs: v }));
-                            notify(v ? "Email notifications enabled" : "Email notifications disabled");
+                            notify(
+                              v
+                                ? "Email notifications enabled"
+                                : "Email notifications disabled"
+                            );
                           }}
                         />
                       }
@@ -296,7 +375,11 @@ export default function Profile({ onToggleTheme, onLogout }) {
                           checked={prefs.twoFA}
                           onChange={(_, v) => {
                             setPrefs((p) => ({ ...p, twoFA: v }));
-                            notify(v ? "Two-factor authentication ON" : "Two-factor authentication OFF");
+                            notify(
+                              v
+                                ? "Two-factor authentication ON"
+                                : "Two-factor authentication OFF"
+                            );
                           }}
                         />
                       }
@@ -308,7 +391,11 @@ export default function Profile({ onToggleTheme, onLogout }) {
                           checked={prefs.autoSave}
                           onChange={(_, v) => {
                             setPrefs((p) => ({ ...p, autoSave: v }));
-                            notify(v ? "Auto-save enabled" : "Auto-save disabled");
+                            notify(
+                              v
+                                ? "Auto-save enabled"
+                                : "Auto-save disabled"
+                            );
                           }}
                         />
                       }
@@ -326,16 +413,31 @@ export default function Profile({ onToggleTheme, onLogout }) {
                 <CardContent sx={{ pt: 0 }}>
                   <List dense>
                     <ListItem>
-                      <ListItemIcon><CheckCircleOutlineOutlinedIcon fontSize="small" /></ListItemIcon>
-                      <ListItemText primary="Updated profile information" secondary="2 hours ago" />
+                      <ListItemIcon>
+                        <CheckCircleOutlineOutlinedIcon fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary="Updated profile information"
+                        secondary="2 hours ago"
+                      />
                     </ListItem>
                     <ListItem>
-                      <ListItemIcon><SecurityOutlinedIcon fontSize="small" /></ListItemIcon>
-                      <ListItemText primary="Enabled 2FA" secondary="Yesterday" />
+                      <ListItemIcon>
+                        <SecurityOutlinedIcon fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary="Enabled 2FA"
+                        secondary="Yesterday"
+                      />
                     </ListItem>
                     <ListItem>
-                      <ListItemIcon><PersonOutlineIcon fontSize="small" /></ListItemIcon>
-                      <ListItemText primary="Joined project ‘Atlas’" secondary="3 days ago" />
+                      <ListItemIcon>
+                        <PersonOutlineIcon fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary="Joined project ‘Atlas’"
+                        secondary="3 days ago"
+                      />
                     </ListItem>
                   </List>
                 </CardContent>
@@ -346,45 +448,70 @@ export default function Profile({ onToggleTheme, onLogout }) {
       </Grid>
 
       {/* Dialog تعديل البيانات */}
-      <Dialog open={editOpen} onClose={() => setEditOpen(false)} fullWidth maxWidth="sm">
+      <Dialog
+        open={editOpen}
+        onClose={() => setEditOpen(false)}
+        fullWidth
+        maxWidth="sm"
+      >
         <DialogTitle>Edit Profile</DialogTitle>
         <DialogContent dividers>
           <Stack spacing={2} sx={{ mt: 1 }}>
             <TextField
               label="Name"
               value={form.name}
-              onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, name: e.target.value }))
+              }
               fullWidth
             />
             <TextField
               label="Email"
               value={form.email}
-              onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, email: e.target.value }))
+              }
               fullWidth
             />
             <TextField
               label="Phone"
               value={form.phone}
-              onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, phone: e.target.value }))
+              }
               fullWidth
             />
             <TextField
               label="Avatar URL"
               value={form.avatar}
-              onChange={(e) => setForm((f) => ({ ...f, avatar: e.target.value }))}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, avatar: e.target.value }))
+              }
               fullWidth
             />
           </Stack>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setEditOpen(false)}>Cancel</Button>
-          <Button variant="contained" onClick={saveEdit}>Save</Button>
+          <Button variant="contained" onClick={saveEdit}>
+            Save
+          </Button>
         </DialogActions>
       </Dialog>
 
       {/* Snackbar */}
-      <Snackbar open={snack.open} autoHideDuration={1800} onClose={closeSnack} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
-        <Alert onClose={closeSnack} severity={snack.sev} variant="filled" sx={{ width: "100%" }}>
+      <Snackbar
+        open={snack.open}
+        autoHideDuration={1800}
+        onClose={closeSnack}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={closeSnack}
+          severity={snack.sev}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
           {snack.msg}
         </Alert>
       </Snackbar>
