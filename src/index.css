@@ -1,0 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+body {
+  font-family: "Roboto", system-ui, -apple-system, Segoe UI, Arial, sans-serif;
+}
+
+
+:root {
+  --sbw: 5px;
+}
+*::-webkit-scrollbar {
+  width: var(--sbw);
+  height: var(--sbw);
+}
+*::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+  background: rgba(153, 147, 147, 0.749); 
+
+}
+
+
+
+

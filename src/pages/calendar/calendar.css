@@ -1,0 +1,193 @@
+/* ==================================
+   Layout: Sidebar (320px) | Calendar
+================================== */
+.cal-app .cal-grid {
+  display: grid;
+  grid-template-columns: 320px 1fr; /* left: Sidebar | right: Calendar */
+  grid-template-areas: "sidebar main";
+  gap: 16px;
+}
+.cal-app .cal-sidebar { grid-area: sidebar; width: auto; }
+.cal-app .cal-main    { grid-area: main;   min-width: 0; }
+
+/* Mobile: calendar above, sidebar below */
+@media (max-width: 900px) {
+  .cal-app .cal-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "main"
+      "sidebar";
+    gap: 12px;
+  }
+  .cal-app .cal-main,
+  .cal-app .cal-sidebar { padding: 12px; min-width: 0; }
+}
+
+/* ==================================
+   Theme surface/text (MUI-friendly)
+================================== */
+.fc { background: var(--mui-background, inherit); }
+.fc .fc-col-header,
+.fc .fc-daygrid-day-frame,
+.fc .fc-daygrid-body {
+  background: var(--mui-paper, inherit);
+  color: var(--mui-text-primary, inherit);
+}
+
+/* ==================================
+   Header (Sun–Sat) in both themes
+================================== */
+.cal-app .fc .fc-col-header { background: var(--mui-paper, #f5f7fa); }
+.cal-app .fc .fc-col-header-cell-cushion {
+  color: var(--mui-text-primary, #111827) !important;
+  font-weight: 600;
+}
+.cal-app.cal-dark .fc .fc-col-header {
+  background: var(--mui-paper, #151515) !important;
+  border-color: var(--mui-divider, #2a2a2a) !important;
+}
+.cal-app.cal-dark .fc .fc-col-header-cell-cushion {
+  color: var(--mui-text-primary, #e5e7eb) !important;
+  opacity: .95;
+}
+
+/* Grid borders per theme */
+.cal-app .fc-theme-standard td,
+.cal-app .fc-theme-standard th,
+.cal-app .fc-theme-standard .fc-scrollgrid {
+  border-color: var(--mui-divider, #d0d0d0) !important;
+}
+.cal-app.cal-dark .fc-theme-standard td,
+.cal-app.cal-dark .fc-theme-standard th,
+.cal-app.cal-dark .fc-theme-standard .fc-scrollgrid {
+  border-color: var(--mui-divider, #2a2a2a) !important;
+}
+
+/* ==================================
+   Events (month + timeGrid)
+================================== */
+.cal-app .fc-h-event,
+.cal-app .fc-v-event {
+  background: #4f8cff !important;
+  color: #0b1020 !important;
+  border: none !important;
+  border-radius: 6px;
+  max-width: 100% !important; /* don't exceed cell width */
+  overflow: hidden !important;
+}
+.cal-app.cal-dark .fc-h-event,
+.cal-app.cal-dark .fc-v-event {
+  background: #60a5fa !important;
+  color: #0b1020 !important;
+}
+
+/* Event text: ellipsis + no wrap */
+.cal-app .fc .fc-event-title,
+.cal-app .fc .fc-event-time,
+.cal-app .fc .fc-event-title-container,
+.cal-app .fc .fc-event-main {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+/* Day cell internal clipping */
+.cal-app .fc .fc-daygrid-day-events { overflow: hidden !important; }
+
+/* ==================================
+   Month view: allow horizontal spanning
+================================== */
+.cal-app .fc .fc-daygrid-block-event {
+  max-width: none !important;
+  overflow: visible !important;
+}
+.cal-app .fc .fc-daygrid-day-events {
+  overflow: visible !important; /* don't clip horizontal span */
+}
+
+/* Week/Day (timeGrid): keep events within column */
+.cal-app .fc .fc-timegrid-event,
+.cal-app .fc .fc-timegrid-event-harness {
+  max-width: 100% !important;
+  overflow: hidden !important;
+}
+
+/* ==================================
+   Spacing between day number and events
+   (fix: date sticking to first event)
+   Use a single custom property to tweak globally.
+================================== */
+:root { --cal-day-number-gap: 6px; }
+
+/* Add spacing below the top area */
+.cal-app .fc .fc-daygrid-day-top { padding-bottom: var(--cal-day-number-gap) !important; }
+/* or add margin on the events container (belt & suspenders) */
+.cal-app .fc .fc-daygrid-day-events { margin-top: var(--cal-day-number-gap) !important; }
+
+/* Optional: small bottom margin for the numeric badge itself */
+.cal-app .fc .fc-daygrid-day-number {
+  display: inline-block;
+  margin-bottom: var(--cal-day-number-gap) !important;
+}
+
+/* ==================================
+   Mobile polish
+================================== */
+@media (max-width: 900px) {
+  /* Wrap toolbar */
+  .cal-app .fc .fc-toolbar.fc-header-toolbar { flex-wrap: wrap; gap: 8px; }
+  .cal-app .fc .fc-toolbar-title { font-size: 1.05rem; line-height: 1.2; }
+  .cal-app .fc .fc-button-group { flex-wrap: wrap; }
+  .cal-app .fc .fc-button { padding: 4px 8px; border-radius: 6px; }
+
+  /* Reduce cell padding to improve density */
+  .cal-app .fc .fc-daygrid-day-frame { padding: 2px; }
+
+  /* Smaller event text on narrow screens */
+  .cal-app .fc .fc-event,
+  .cal-app .fc .fc-event-title,
+  .cal-app .fc .fc-event-time { font-size: 12px; }
+}
+
+/* ==================================
+   Popover ("more")
+================================== */
+.cal-app .fc .fc-popover {
+  background: var(--mui-paper, #fff);
+  color: var(--mui-text-primary, #111827);
+  border: 1px solid var(--mui-divider, #e5e7eb);
+}
+.cal-app.cal-dark .fc .fc-popover {
+  background: var(--mui-paper, #121a2f);
+  color: var(--mui-text-primary, #e5e7eb);
+  border-color: var(--mui-divider, #2a2a2a);
+}
+/* Add spacing between date and title inside Sidebar list */
+.cal-event-item b {
+  margin-right: 6px; /* Space between date and event title */
+}
+/* Sidebar: spacing + long-word wrapping */
+.cal-event-item i {
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+/* يمنع أي event من الخروج عن حدود الخلية */
+/* Removed a global clipping rule to avoid conflicting with the month-view
+   rule that allows horizontal spanning; use the .cal-app scoped rules above
+   so month/day layouts behave as intended. */
+/* يمنع النص نفسه من التمدد خارج الحد */
+.fc .fc-daygrid-event {
+  max-width: 100% !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  font-size: 0.8rem; /* تقدر تزود أو تقلل لو الخط صغير/كبير */
+}
+
+/* على الموبايل: صغّر الخط أكتر */
+@media (max-width: 600px) {
+  .fc .fc-daygrid-event {
+    font-size: 0.7rem !important;
+  }
+}

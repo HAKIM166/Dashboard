@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "ignoreDeprecations": "6.0",
+    "baseUrl": ".",
+    "paths": {
+      "*": ["src/*"]
+    },
+    "jsx": "react-jsx",
+    "checkJs": false,
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "lib": ["es6", "dom", "es2017"]
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "build", "dist"]
+}
