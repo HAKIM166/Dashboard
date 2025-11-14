@@ -38,8 +38,12 @@ const router = createBrowserRouter(
       <Route path="line" element={<Line />} />
       <Route path="geography" element={<Geography />} />
     </Route>
-  )
+  ),
+  {
+    basename: "/Dashboard", // اسم الريبو على GitHub
+  }
 );
+
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
