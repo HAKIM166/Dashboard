@@ -70,6 +70,7 @@ All pages wrapped in a consistent layout shell.
 
 ## 📁 Project Structure
 
+```
 src/
 │── App.jsx
 │── main.jsx
@@ -136,3 +137,4 @@ src/
 │
 └── notFound/
 └── NotFound.jsx
+```
