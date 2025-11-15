@@ -1,2 +1,138 @@
-# Dashboard
-Modern responsive analytics dashboard built with React, MUI, and Nivo charts
+# 🧱 Dashboard – React Admin Panel (Vite + MUI + Router)
+
+A production-grade, modular, and scalable **React Admin Dashboard** built using:
+
+- **React 18**
+- **Vite**
+- **Material UI (MUI v5)**
+- **React Router**
+- **Local Storage Persistence**
+- **Dynamic Theming + Component Isolation**
+
+Designed as a clean, maintainable front-end architecture suitable for real-world dashboards.
+
+---
+
+## ⚙️ Core Features
+
+### 🔧 Front-End Architecture
+- Modular directory structure with clear separation between:
+  - Components  
+  - Pages  
+  - Layout  
+  - Charts  
+  - Forms  
+  - Tables  
+  - Utilities
+
+- Reusable UI components (Sidebar, TopBar, Header)
+- Centralized theming with light/dark mode
+- Dynamic routing
+
+---
+
+### 👤 Profile System
+- Full user profile panel
+- Editable:
+  - Name
+  - Email
+  - Phone
+- **Local Avatar Upload** (File → Base64 → Persist in localStorage)
+- Real-time "Last Login" calculation
+- Preferences stored locally:
+  - Email notifications
+  - 2FA toggle
+  - Autosave toggle
+
+---
+
+## 📊 Analytical Views
+Includes:
+- Bar Chart
+- Line Chart
+- Pie Chart
+- Geography Heatmap
+- KPI Cards
+- Modular dashboard rows
+
+---
+
+## 📅 Productivity Pages
+- Calendar page  
+- Contacts table  
+- Team roles page  
+- Invoices table  
+- FAQ system  
+
+All pages wrapped in a consistent layout shell.
+
+---
+
+## 📁 Project Structure
+
+src/
+│── App.jsx
+│── main.jsx
+│── theme.jsx
+│── index.css
+│
+├── components/
+│ ├── Header.jsx
+│ ├── SideBar.jsx
+│ └── TopBar.jsx
+│
+├── pages/
+│ ├── dashboard/
+│ │ ├── Dashboard.jsx
+│ │ ├── Card.jsx
+│ │ ├── Row1.jsx
+│ │ ├── Row2.jsx
+│ │ ├── Row3.jsx
+│ │ └── data.js
+│ │
+│ ├── profile/
+│ │ └── Profile.jsx
+│ │
+│ ├── team/
+│ │ ├── Team.jsx
+│ │ └── data.js
+│ │
+│ ├── contacts/
+│ │ ├── Contacts.jsx
+│ │ └── data.js
+│ │
+│ ├── invoices/
+│ │ ├── Invoices.jsx
+│ │ └── data.js
+│ │
+│ ├── barChart/
+│ │ ├── Bar.jsx
+│ │ └── BarChart.jsx
+│ │
+│ ├── lineChart/
+│ │ ├── Line.jsx
+│ │ └── LineChart.jsx
+│ │
+│ ├── pieChart/
+│ │ ├── Pie.jsx
+│ │ └── PieChart.jsx
+│ │
+│ ├── geography/
+│ │ ├── Geo.jsx
+│ │ ├── Geography.jsx
+│ │ ├── data.js
+│ │ └── world_countries.jsx
+│ │
+│ ├── calendar/
+│ │ ├── Calendar.jsx
+│ │ ├── calendar.css
+│ │ └── EventUtils.js
+│ │
+│ ├── FAQ/
+│ │ └── FAQ.jsx
+│ │
+│ └── form/
+│ └── Form.jsx
+│
+└── notFound/
+└── NotFound.jsx
