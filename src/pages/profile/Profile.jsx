@@ -193,6 +193,28 @@ export default function Profile({ onToggleTheme, onLogout }) {
     }
   };
 
+  // ========= Avatar file upload handler =========
+  const handleAvatarUpload = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      const result = reader.result;
+      if (typeof result === "string") {
+        setForm((f) => ({
+          ...f,
+          avatar: result, // data URL
+        }));
+        notify("Avatar selected (save to apply)");
+      }
+    };
+
+    reader.readAsDataURL(file);
+  };
+  // ==============================================
+
   return (
     <Box
       sx={{
@@ -575,14 +597,16 @@ export default function Profile({ onToggleTheme, onLogout }) {
               }
               fullWidth
             />
-            <TextField
-              label="Avatar URL"
-              value={form.avatar}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, avatar: e.target.value }))
-              }
-              fullWidth
-            />
+
+            <Button variant="outlined" component="label">
+              Upload Avatar
+              <input
+                type="file"
+                accept="image/*"
+                hidden
+                onChange={handleAvatarUpload}
+              />
+            </Button>
           </Stack>
         </DialogContent>
         <DialogActions>
