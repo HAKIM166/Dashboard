@@ -45,6 +45,21 @@ const EMPTY_CONTACT = {
   zipCode: "",
 };
 
+// ---- helpers to map between dialog state and grid row ----
+
+// Read values from a grid row into dialog state (handles different casings)
+const mapRowToEditing = (row) => ({
+  id: row.id,
+  registrarId: row.registrarId || row.RegistrarID || "",
+  name: row.name || row.Name || "",
+  age: row.age || row.Age || "",
+  phone: row.phone || row.Phone || "",
+  email: row.email || row.Email || "",
+  address: row.address || row.Address || "",
+  city: row.city || row.City || "",
+  zipCode: row.zipCode || row.ZipCode || "",
+});
+
 export default function Contacts() {
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down("sm"));
@@ -100,21 +115,6 @@ export default function Contacts() {
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [dialogMode, setDialogMode] = React.useState("add"); // "add" | "edit"
   const [editingRow, setEditingRow] = React.useState(EMPTY_CONTACT);
-
-  // ---- helpers to map between dialog state and grid row ----
-
-  // Read values from a grid row into dialog state (handles different casings)
-  const mapRowToEditing = (row) => ({
-    id: row.id,
-    registrarId: row.registrarId || row.RegistrarID || "",
-    name: row.name || row.Name || "",
-    age: row.age || row.Age || "",
-    phone: row.phone || row.Phone || "",
-    email: row.email || row.Email || "",
-    address: row.address || row.Address || "",
-    city: row.city || row.City || "",
-    zipCode: row.zipCode || row.ZipCode || "",
-  });
 
   // Build a new grid row object from dialog state, using baseColumns fields
   const mapEditingToRow = () => {
@@ -199,12 +199,15 @@ export default function Contacts() {
     setDialogOpen(true);
   };
 
-  const handleEditClick = (row) => {
-    if (!canEdit) return;
-    setDialogMode("edit");
-    setEditingRow(mapRowToEditing(row));
-    setDialogOpen(true);
-  };
+  const handleEditClick = React.useCallback(
+    (row) => {
+      if (!canEdit) return;
+      setDialogMode("edit");
+      setEditingRow(mapRowToEditing(row));
+      setDialogOpen(true);
+    },
+    [canEdit]
+  );
 
   const handleDialogClose = () => {
     setDialogOpen(false);
@@ -237,15 +240,18 @@ export default function Contacts() {
     setDialogOpen(false);
   };
 
-  const handleDeleteClick = (id) => {
-    if (!canEdit) return;
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this contact?"
-    );
-    if (!confirmed) return;
+  const handleDeleteClick = React.useCallback(
+    (id) => {
+      if (!canEdit) return;
+      const confirmed = window.confirm(
+        "Are you sure you want to delete this contact?"
+      );
+      if (!confirmed) return;
 
-    setContactRows((prev) => prev.filter((row) => row.id !== id));
-  };
+      setContactRows((prev) => prev.filter((row) => row.id !== id));
+    },
+    [canEdit]
+  );
 
   // ---- columns (add Actions column without mutating baseColumns) ----
 
@@ -290,7 +296,7 @@ export default function Contacts() {
     };
 
     return [...baseColumns, actionsColumn];
-  }, [canEdit, isXs]);
+  }, [canEdit, isXs, handleEditClick, handleDeleteClick]);
 
   // Columns displayed based on viewport size (for responsiveness)
   const displayedColumns = React.useMemo(() => {
