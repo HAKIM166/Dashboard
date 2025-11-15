@@ -1,3 +1,10 @@
+/**
+ * Calendar Styles
+ * ----------------
+ * Layout and theming overrides for the calendar module,
+ * aligned with the app's MUI surfaces, typography, and responsive breakpoints.
+ */
+
 /* ==================================
    Layout: Sidebar (320px) | Calendar
 ================================== */
@@ -172,20 +179,19 @@
   overflow-wrap: anywhere;
   word-break: break-word;
 }
-/* يمنع أي event من الخروج عن حدود الخلية */
+
 /* Removed a global clipping rule to avoid conflicting with the month-view
    rule that allows horizontal spanning; use the .cal-app scoped rules above
    so month/day layouts behave as intended. */
-/* يمنع النص نفسه من التمدد خارج الحد */
+
 .fc .fc-daygrid-event {
   max-width: 100% !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
   white-space: nowrap !important;
-  font-size: 0.8rem; /* تقدر تزود أو تقلل لو الخط صغير/كبير */
+  font-size: 0.8rem;
 }
 
-/* على الموبايل: صغّر الخط أكتر */
 @media (max-width: 600px) {
   .fc .fc-daygrid-event {
     font-size: 0.7rem !important;

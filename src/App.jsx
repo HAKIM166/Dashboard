@@ -1,6 +1,13 @@
+/**
+ * App Shell
+ * ---------
+ * Root layout component wiring the global MUI theme, top navigation bar,
+ * responsive sidebar, and routed page content.
+ */
+
 import * as React from "react";
 import { createTheme, styled, ThemeProvider } from "@mui/material/styles";
-import { Box, CssBaseline } from "@mui/material";
+import { Box, CssBaseline, useMediaQuery } from "@mui/material";
 import TopBar from "./components/TopBar";
 import SideBar from "./components/SideBar";
 import { getDesignTokens } from "./theme";
@@ -15,33 +22,45 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 }));
 
 export default function App() {
-  const [open, setOpen] = React.useState(false);
+  const initialMode = localStorage.getItem("currentMode") || "dark";
+  const [mode, setMode] = React.useState(initialMode);
+
+  const theme = React.useMemo(
+    () => createTheme(getDesignTokens(mode)),
+    [mode]
+  );
+
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const [open, setOpen] = React.useState(!isMobile);
+
+  React.useEffect(() => {
+    setOpen(!isMobile);
+  }, [isMobile]);
 
   const handleDrawerOpen = () => setOpen(true);
   const handleDrawerClose = () => setOpen(false);
 
-  const [mode, setMode] = React.useState(
-    localStorage.getItem("currentMode")
-      ? localStorage.getItem("currentMode")
-      : "dark"
-  );
-  const theme = React.useMemo(() => createTheme(getDesignTokens(mode)), [mode]);
   return (
     <ThemeProvider theme={theme}>
-      <Box sx={{ display: "flex",}}>
+      <Box sx={{ display: "flex" }}>
         <CssBaseline />
+
         <TopBar
           open={open}
           handleDrawerOpen={handleDrawerOpen}
           setMode={setMode}
         />
-        <SideBar
-          open={open}
-          theme={theme}
-          handleDrawerClose={handleDrawerClose}
-        />
-        <Box component="main" sx={{ flexGrow: 1, p: 3, overflow: "visible !important" }}>
 
+        <SideBar open={open} handleDrawerClose={handleDrawerClose} />
+
+        <Box
+          component="main"
+          sx={{
+            flexGrow: 1,
+            p: 3,
+            overflow: "visible !important",
+          }}
+        >
           <DrawerHeader />
           <Outlet />
         </Box>

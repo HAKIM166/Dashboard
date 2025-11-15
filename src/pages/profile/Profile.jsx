@@ -1,11 +1,16 @@
+/**
+ * Profile Page
+ * -------------
+ * User profile and settings screen that persists data to localStorage,
+ * shows live last-login timing, and exposes theme and logout hooks.
+ */
+
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Container,
   Grid,
   Card,
-  CardHeader,
   CardContent,
-  CardActions,
   Avatar,
   Typography,
   Stack,
@@ -28,7 +33,10 @@ import {
   TextField,
   Snackbar,
   Alert,
+  useMediaQuery,
 } from "@mui/material";
+
+import { useTheme } from "@mui/material/styles";
 
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -42,7 +50,9 @@ import StorageOutlinedIcon from "@mui/icons-material/StorageOutlined";
 import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
 
 export default function Profile({ onToggleTheme, onLogout }) {
-  // ========= 1) بيانات المستخدم (قابلة للتعديل) =========
+  const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
+  const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
 
   const defaultUser = {
     name: "Mohamed Ali",
@@ -61,10 +71,7 @@ export default function Profile({ onToggleTheme, onLogout }) {
     try {
       const saved = localStorage.getItem("profile_user");
       if (!saved) return defaultUser;
-
       const parsed = JSON.parse(saved);
-
-      // ندمج عشان لو فيه بيانات ناقصة/قديمة
       return { ...defaultUser, ...parsed };
     } catch (e) {
       console.warn("Failed to parse profile_user from localStorage:", e);
@@ -76,7 +83,6 @@ export default function Profile({ onToggleTheme, onLogout }) {
     localStorage.setItem("profile_user", JSON.stringify(user));
   }, [user]);
 
-  // ========= 2) تفضيلات (سويتشات) مع حفظ =========
   const [prefs, setPrefs] = useState(() => {
     try {
       const saved = localStorage.getItem("profile_prefs");
@@ -107,7 +113,6 @@ export default function Profile({ onToggleTheme, onLogout }) {
     localStorage.setItem("profile_prefs", JSON.stringify(prefs));
   }, [prefs]);
 
-  // ========= 3) وقت آخر دخول + ساعة حية =========
   const [now, setNow] = useState(Date.now());
 
   useEffect(() => {
@@ -128,7 +133,6 @@ export default function Profile({ onToggleTheme, onLogout }) {
     return `${days} day${days > 1 ? "s" : ""} ago`;
   }, [now, user.lastLoginISO]);
 
-  // ========= 4) Dialog تعديل الملف =========
   const [editOpen, setEditOpen] = useState(false);
   const [form, setForm] = useState({
     name: user.name,
@@ -147,16 +151,19 @@ export default function Profile({ onToggleTheme, onLogout }) {
     setEditOpen(true);
   };
 
-  // ========= 5) Snackbar للتأكيدات =========
   const [snack, setSnack] = useState({
     open: false,
     msg: "",
     sev: "success",
   });
 
-  const notify = (msg, sev = "success") =>
-    setSnack({ open: true, msg, sev });
-  const closeSnack = () => setSnack((prev) => ({ ...prev, open: false }));
+  const notify = (msg, sev = "success") => setSnack({ open: true, msg, sev });
+
+  const closeSnack = () =>
+    setSnack((prev) => ({
+      ...prev,
+      open: false,
+    }));
 
   const saveEdit = () => {
     setUser((u) => ({ ...u, ...form }));
@@ -164,7 +171,6 @@ export default function Profile({ onToggleTheme, onLogout }) {
     notify("Profile updated");
   };
 
-  // ========= 6) Toggle Theme مضمون =========
   const handleToggleTheme = () => {
     if (typeof onToggleTheme === "function") {
       onToggleTheme();
@@ -178,7 +184,6 @@ export default function Profile({ onToggleTheme, onLogout }) {
     }
   };
 
-  // ========= 7) Logout (بسيط + hook اختياري) =========
   const handleLogout = () => {
     if (typeof onLogout === "function") {
       onLogout();
@@ -189,265 +194,354 @@ export default function Profile({ onToggleTheme, onLogout }) {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ py: { xs: 3, md: 5 } }}>
-      <Grid container spacing={3}>
-        {/* العمود الأيسر: بطاقة المستخدم */}
-        <Grid item xs={12} md={4}>
-          <Card sx={{ borderRadius: 3, overflow: "hidden" }} elevation={8}>
-            <Box
-              sx={{
-                height: 120,
-                background:
-                  "linear-gradient(135deg, rgba(99,102,241,.25), rgba(56,189,248,.25))",
-              }}
-            />
-            <CardContent sx={{ pt: 0 }}>
-              <Stack alignItems="center" sx={{ mt: -7 }}>
+    <Box
+      sx={{
+        bgcolor:
+          theme.palette.mode === "dark" ? "background.default" : "grey.50",
+        minHeight: "100%",
+        py: { xs: 2, md: 4 },
+      }}
+    >
+      <Container maxWidth="md">
+        <Stack spacing={3}>
+          <Box>
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+              spacing={2}
+              flexWrap="wrap"
+            >
+              <Box>
+                <Typography
+                  variant={isSmall ? "h6" : "h5"}
+                  sx={{
+                    color: isDark
+                      ? theme.palette.warning.light
+                      : theme.palette.info.main,
+                    fontWeight: 700,
+                  }}
+                >
+                  Profile & Settings
+                </Typography>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ mt: 0.5 }}
+                >
+                  Manage your account information, preferences, and activity.
+                </Typography>
+              </Box>
+              <IconButton onClick={handleToggleTheme} title="Toggle Theme">
+                <Brightness4OutlinedIcon />
+              </IconButton>
+            </Stack>
+          </Box>
+
+          <Card
+            sx={{
+              borderRadius: 3,
+              overflow: "hidden",
+            }}
+            elevation={4}
+          >
+            <CardContent>
+              <Stack
+                direction={isSmall ? "column" : "row"}
+                spacing={3}
+                alignItems={isSmall ? "center" : "flex-start"}
+              >
                 <Avatar
                   src={user.avatar}
                   alt={user.name}
                   sx={{
-                    width: 112,
-                    height: 112,
-                    border: "3px solid rgba(255,255,255,.9)",
-                    boxShadow: 3,
+                    width: 96,
+                    height: 96,
+                    bgcolor: theme.palette.primary.main,
+                    fontSize: "2rem",
                   }}
                 >
                   {(user.name?.[0] || "U").toUpperCase()}
                 </Avatar>
 
-                <Typography variant="h6" sx={{ mt: 1, fontWeight: 700 }}>
-                  {user.name}
-                </Typography>
-
-                <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
-                  <Chip size="small" label={user.role} />
-                  <Chip size="small" color="success" label={user.status} />
-                </Stack>
-
-                <Stack
-                  direction="row"
-                  spacing={1}
-                  alignItems="center"
-                  sx={{ mt: 1, color: "text.secondary" }}
-                >
-                  <EmailOutlinedIcon fontSize="small" />
-                  <Typography variant="body2">{user.email}</Typography>
-                </Stack>
-
-                <Stack
-                  direction="row"
-                  spacing={1}
-                  alignItems="center"
-                  sx={{ mt: 0.5, color: "text.secondary" }}
-                >
-                  <PhoneIphoneOutlinedIcon fontSize="small" />
-                  <Typography variant="body2">{user.phone}</Typography>
-                </Stack>
-              </Stack>
-
-              {/* التخزين */}
-              <Box sx={{ mt: 3 }}>
-                <Stack
-                  direction="row"
-                  spacing={1}
-                  alignItems="center"
-                  mb={0.5}
-                >
-                  <StorageOutlinedIcon fontSize="small" />
-                  <Typography variant="caption" color="text.secondary">
-                    Storage
+                <Stack spacing={1} sx={{ flexGrow: 1, minWidth: 0 }}>
+                  <Typography
+                    variant={isSmall ? "h6" : "h5"}
+                    sx={{ fontWeight: 700 }}
+                  >
+                    {user.name}
                   </Typography>
-                </Stack>
-                <LinearProgress
-                  variant="determinate"
-                  value={user.storagePct}
-                  sx={{ my: 0.75, height: 8, borderRadius: 2 }}
-                />
-                <Typography variant="caption">
-                  {user.used} / {user.quota}
-                </Typography>
-              </Box>
-            </CardContent>
 
-            <CardActions
-              sx={{
-                px: 2,
-                py: 1.5,
-                display: "flex",
-                justifyContent: "space-between",
-                borderTop: (t) => `1px solid ${t.palette.divider}`,
-              }}
-            >
-              <Button
-                variant="contained"
-                startIcon={<EditOutlinedIcon />}
-                onClick={openEdit}
-              >
-                Edit Profile
-              </Button>
-              <IconButton color="error" onClick={handleLogout}>
-                <LogoutIcon />
-              </IconButton>
-            </CardActions>
-          </Card>
-        </Grid>
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    flexWrap="wrap"
+                    alignItems="center"
+                  >
+                    <Chip
+                      size="small"
+                      label={user.role}
+                      color="primary"
+                      variant="outlined"
+                    />
+                    <Chip
+                      size="small"
+                      color="success"
+                      label={user.status}
+                      icon={<CheckCircleOutlineOutlinedIcon />}
+                    />
+                  </Stack>
 
-        {/* العمود الأيمن: تفاصيل + تفضيلات + نشاط */}
-        <Grid item xs={12} md={8}>
-          {/* معلومات الحساب */}
-          <Card sx={{ borderRadius: 3 }} elevation={4}>
-            <CardHeader
-              title="Account Info"
-              subheader={`Last login: ${relativeLastLogin}`}
-              action={
-                <IconButton onClick={handleToggleTheme} title="Toggle Theme">
-                  <Brightness4OutlinedIcon />
-                </IconButton>
-              }
-            />
-            <Divider />
-            <CardContent>
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="overline" color="text.secondary">
-                    Name
-                  </Typography>
-                  <Typography variant="body1">{user.name}</Typography>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="overline" color="text.secondary">
-                    Email
-                  </Typography>
-                  <Typography variant="body1">{user.email}</Typography>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="overline" color="text.secondary">
-                    Role
-                  </Typography>
-                  <Typography variant="body1">{user.role}</Typography>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="overline" color="text.secondary">
-                    Exact time
-                  </Typography>
-                  <Stack direction="row" spacing={1} alignItems="center">
-                    <AccessTimeOutlinedIcon fontSize="small" />
-                    <Typography variant="body1">
-                      {new Date(now).toLocaleTimeString()}
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    alignItems="center"
+                    sx={{ color: "text.secondary", mt: 0.5 }}
+                  >
+                    <EmailOutlinedIcon fontSize="small" />
+                    <Typography variant="body2" noWrap>
+                      {user.email}
                     </Typography>
                   </Stack>
-                </Grid>
-              </Grid>
+
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    alignItems="center"
+                    sx={{ color: "text.secondary" }}
+                  >
+                    <PhoneIphoneOutlinedIcon fontSize="small" />
+                    <Typography variant="body2" noWrap>
+                      {user.phone}
+                    </Typography>
+                  </Stack>
+
+                  <Box sx={{ mt: 1.5 }}>
+                    <Stack
+                      direction="row"
+                      spacing={1}
+                      alignItems="center"
+                      mb={0.5}
+                    >
+                      <StorageOutlinedIcon fontSize="small" />
+                      <Typography variant="caption" color="text.secondary">
+                        Storage usage
+                      </Typography>
+                    </Stack>
+                    <LinearProgress
+                      variant="determinate"
+                      value={user.storagePct}
+                      sx={{
+                        my: 0.5,
+                        height: 6,
+                        borderRadius: 999,
+                      }}
+                    />
+                    <Typography variant="caption" color="text.secondary">
+                      {user.used} / {user.quota}
+                    </Typography>
+                  </Box>
+                </Stack>
+
+                <Stack
+                  direction={isSmall ? "row" : "column"}
+                  spacing={1}
+                  alignItems={isSmall ? "center" : "flex-end"}
+                >
+                  <Button
+                    variant="contained"
+                    startIcon={<EditOutlinedIcon />}
+                    onClick={openEdit}
+                    sx={{ borderRadius: 2, minWidth: 130 }}
+                  >
+                    Edit Profile
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    startIcon={<LogoutIcon />}
+                    onClick={handleLogout}
+                    sx={{ borderRadius: 2, minWidth: 130 }}
+                  >
+                    Logout
+                  </Button>
+                </Stack>
+              </Stack>
             </CardContent>
           </Card>
 
-          {/* تفضيلات + نشاط */}
-          <Grid container spacing={3} sx={{ mt: 1 }}>
-            <Grid item xs={12} md={6}>
-              <Card sx={{ borderRadius: 3 }} elevation={4}>
-                <CardHeader
-                  title="Preferences"
-                  subheader="Personalize your experience"
-                />
-                <Divider />
-                <CardContent>
-                  <Stack spacing={1}>
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          checked={prefs.emailNotifs}
-                          onChange={(_, v) => {
-                            setPrefs((p) => ({ ...p, emailNotifs: v }));
-                            notify(
-                              v
-                                ? "Email notifications enabled"
-                                : "Email notifications disabled"
-                            );
-                          }}
-                        />
-                      }
-                      label="Email notifications"
-                    />
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          checked={prefs.twoFA}
-                          onChange={(_, v) => {
-                            setPrefs((p) => ({ ...p, twoFA: v }));
-                            notify(
-                              v
-                                ? "Two-factor authentication ON"
-                                : "Two-factor authentication OFF"
-                            );
-                          }}
-                        />
-                      }
-                      label="Two-factor authentication"
-                    />
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          checked={prefs.autoSave}
-                          onChange={(_, v) => {
-                            setPrefs((p) => ({ ...p, autoSave: v }));
-                            notify(
-                              v
-                                ? "Auto-save enabled"
-                                : "Auto-save disabled"
-                            );
-                          }}
-                        />
-                      }
-                      label="Auto-save drafts"
-                    />
+          <Card
+            sx={{
+              borderRadius: 3,
+            }}
+            elevation={3}
+          >
+            <CardContent>
+              <Stack spacing={3}>
+                <Box>
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    flexWrap="wrap"
+                    gap={1}
+                    sx={{ mb: 1 }}
+                  >
+                    <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                      Account
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      Last login: {relativeLastLogin}
+                    </Typography>
                   </Stack>
-                </CardContent>
-              </Card>
-            </Grid>
 
-            <Grid item xs={12} md={6}>
-              <Card sx={{ borderRadius: 3 }} elevation={4}>
-                <CardHeader title="Recent Activity" />
+                  <Grid container spacing={2}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
+                      <Typography variant="overline" color="text.secondary">
+                        Name
+                      </Typography>
+                      <Typography variant="body1">{user.name}</Typography>
+                    </Grid>
+                    <Grid size={{ xs: 12, sm: 6 }}>
+                      <Typography variant="overline" color="text.secondary">
+                        Email
+                      </Typography>
+                      <Typography variant="body1">{user.email}</Typography>
+                    </Grid>
+                    <Grid size={{ xs: 12, sm: 6 }}>
+                      <Typography variant="overline" color="text.secondary">
+                        Role
+                      </Typography>
+                      <Typography variant="body1">{user.role}</Typography>
+                    </Grid>
+                    <Grid size={{ xs: 12, sm: 6 }}>
+                      <Typography variant="overline" color="text.secondary">
+                        Current time
+                      </Typography>
+                      <Stack direction="row" spacing={1} alignItems="center">
+                        <AccessTimeOutlinedIcon fontSize="small" />
+                        <Typography variant="body1">
+                          {new Date(now).toLocaleTimeString()}
+                        </Typography>
+                      </Stack>
+                    </Grid>
+                  </Grid>
+                </Box>
+
                 <Divider />
-                <CardContent sx={{ pt: 0 }}>
-                  <List dense>
-                    <ListItem>
-                      <ListItemIcon>
-                        <CheckCircleOutlineOutlinedIcon fontSize="small" />
-                      </ListItemIcon>
-                      <ListItemText
-                        primary="Updated profile information"
-                        secondary="2 hours ago"
-                      />
-                    </ListItem>
-                    <ListItem>
-                      <ListItemIcon>
-                        <SecurityOutlinedIcon fontSize="small" />
-                      </ListItemIcon>
-                      <ListItemText
-                        primary="Enabled 2FA"
-                        secondary="Yesterday"
-                      />
-                    </ListItem>
-                    <ListItem>
-                      <ListItemIcon>
-                        <PersonOutlineIcon fontSize="small" />
-                      </ListItemIcon>
-                      <ListItemText
-                        primary="Joined project ‘Atlas’"
-                        secondary="3 days ago"
-                      />
-                    </ListItem>
-                  </List>
-                </CardContent>
-              </Card>
-            </Grid>
-          </Grid>
-        </Grid>
-      </Grid>
 
-      {/* Dialog تعديل البيانات */}
+                <Grid container spacing={3}>
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <Box>
+                      <Typography
+                        variant="subtitle1"
+                        sx={{ fontWeight: 600, mb: 1 }}
+                      >
+                        Preferences
+                      </Typography>
+                      <Stack spacing={0.5}>
+                        <FormControlLabel
+                          control={
+                            <Switch
+                              checked={prefs.emailNotifs}
+                              onChange={(_, v) => {
+                                setPrefs((p) => ({
+                                  ...p,
+                                  emailNotifs: v,
+                                }));
+                                notify(
+                                  v
+                                    ? "Email notifications enabled"
+                                    : "Email notifications disabled"
+                                );
+                              }}
+                            />
+                          }
+                          label="Email notifications"
+                        />
+                        <FormControlLabel
+                          control={
+                            <Switch
+                              checked={prefs.twoFA}
+                              onChange={(_, v) => {
+                                setPrefs((p) => ({ ...p, twoFA: v }));
+                                notify(
+                                  v
+                                    ? "Two-factor authentication ON"
+                                    : "Two-factor authentication OFF"
+                                );
+                              }}
+                            />
+                          }
+                          label="Two-factor authentication"
+                        />
+                        <FormControlLabel
+                          control={
+                            <Switch
+                              checked={prefs.autoSave}
+                              onChange={(_, v) => {
+                                setPrefs((p) => ({
+                                  ...p,
+                                  autoSave: v,
+                                }));
+                                notify(
+                                  v ? "Auto-save enabled" : "Auto-save disabled"
+                                );
+                              }}
+                            />
+                          }
+                          label="Auto-save drafts"
+                        />
+                      </Stack>
+                    </Box>
+                  </Grid>
+
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <Box>
+                      <Typography
+                        variant="subtitle1"
+                        sx={{ fontWeight: 600, mb: 1 }}
+                      >
+                        Recent Activity
+                      </Typography>
+                      <List dense>
+                        <ListItem disableGutters>
+                          <ListItemIcon sx={{ minWidth: 32 }}>
+                            <CheckCircleOutlineOutlinedIcon fontSize="small" />
+                          </ListItemIcon>
+                          <ListItemText
+                            primary="Updated profile information"
+                            secondary="2 hours ago"
+                          />
+                        </ListItem>
+                        <ListItem disableGutters>
+                          <ListItemIcon sx={{ minWidth: 32 }}>
+                            <SecurityOutlinedIcon fontSize="small" />
+                          </ListItemIcon>
+                          <ListItemText
+                            primary="Enabled 2FA"
+                            secondary="Yesterday"
+                          />
+                        </ListItem>
+                        <ListItem disableGutters>
+                          <ListItemIcon sx={{ minWidth: 32 }}>
+                            <PersonOutlineIcon fontSize="small" />
+                          </ListItemIcon>
+                          <ListItemText
+                            primary="Joined project ‘Atlas’"
+                            secondary="3 days ago"
+                          />
+                        </ListItem>
+                      </List>
+                    </Box>
+                  </Grid>
+                </Grid>
+              </Stack>
+            </CardContent>
+          </Card>
+        </Stack>
+      </Container>
+
       <Dialog
         open={editOpen}
         onClose={() => setEditOpen(false)}
@@ -499,7 +593,6 @@ export default function Profile({ onToggleTheme, onLogout }) {
         </DialogActions>
       </Dialog>
 
-      {/* Snackbar */}
       <Snackbar
         open={snack.open}
         autoHideDuration={1800}
@@ -515,6 +608,6 @@ export default function Profile({ onToggleTheme, onLogout }) {
           {snack.msg}
         </Alert>
       </Snackbar>
-    </Container>
+    </Box>
   );
 }

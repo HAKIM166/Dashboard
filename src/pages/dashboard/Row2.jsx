@@ -1,3 +1,10 @@
+/**
+ * Dashboard Row 2
+ * ----------------
+ * Combined revenue line chart and recent transactions list,
+ * giving a quick view of financial performance and latest activity.
+ */
+
 import {
   Box,
   IconButton,
@@ -17,7 +24,7 @@ export default function Row2() {
 
   return (
     <Stack direction={"row"} flexWrap={"wrap"} gap={1.5} mt={2}>
-      <Paper sx={{ flex: "1 1 400px" }}>
+      <Paper sx={{ flex: "1 1 320px", minWidth: { xs: "100%", sm: 320 } }}>
         <Stack
           direction={"row"}
           flexWrap={"wrap"}
@@ -50,7 +57,14 @@ export default function Row2() {
         <Line isDashboard={true} />
       </Paper>
 
-      <Box sx={{ overflow: "auto", minWidth: "280px", height: 360, flex: "1" }}>
+      <Box
+        sx={{
+          overflow: "auto",
+          minWidth: { xs: "100%", sm: 280 },
+          height: 360,
+          flex: "1",
+        }}
+      >
         <Paper>
           <Typography
             color={
@@ -73,6 +87,7 @@ export default function Row2() {
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
+                px: 1,
               }}
             >
               <Box p={1.2}>
@@ -82,13 +97,15 @@ export default function Row2() {
                 <Typography variant="body2">{tx.date}</Typography>
               </Box>
 
-              <Typography variant="body1">{tx.txId}</Typography>
+              <Typography variant="body2">{tx.txId}</Typography>
 
               <Typography
                 borderRadius={1.4}
                 p={1}
                 bgcolor={Theme.palette.error.main}
-                color={Theme.palette.getContrastText(Theme.palette.error.main)}
+                color={Theme.palette.getContrastText(
+                  Theme.palette.error.main
+                )}
                 variant="body2"
               >
                 ${tx.cost}

@@ -1,5 +1,12 @@
+/**
+ * Application Entry Point
+ * -----------------------
+ * Bootstraps the React application, configures the hash-based router,
+ * and wires top-level routes into the main App layout.
+ */
+
 import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";   // مهم جداً — انت نسيته
+import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.jsx";
 
@@ -22,6 +29,7 @@ import Line from "./pages/lineChart/LineChart";
 import Geography from "./pages/geography/Geography";
 import Form from "./pages/form/Form";
 import Profile from "./pages/profile/Profile";
+import NotFound from "./notFound/NotFound";
 
 const router = createHashRouter(
   createRoutesFromElements(
@@ -38,6 +46,7 @@ const router = createHashRouter(
       <Route path="pie" element={<Pie />} />
       <Route path="line" element={<Line />} />
       <Route path="geography" element={<Geography />} />
+      <Route path="*" element={<NotFound />} />
     </Route>
   )
 );

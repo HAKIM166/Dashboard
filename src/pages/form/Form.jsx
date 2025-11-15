@@ -1,3 +1,11 @@
+/**
+ * Profile Form Page
+ * -----------------
+ * User profile form built with react-hook-form and MUI,
+ * including validation for core fields and a success snackbar on submit.
+ */
+
+import React from "react";
 import {
   Alert,
   Box,
@@ -7,7 +15,7 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import React from "react";
+import Header from "../../components/Header";
 import { useForm } from "react-hook-form";
 
 export default function Form() {
@@ -47,7 +55,7 @@ export default function Form() {
     }
     setOpen(false);
   };
-    const onSubmit = () => {
+  const onSubmit = () => {
     console.log("done");
     handleClick();
   };
@@ -64,6 +72,10 @@ export default function Form() {
       noValidate
       autoComplete="off"
     >
+      <Header
+        title={"PROFILE FORM"}
+        subTitle={"View and update your personal profile"}
+      />
       <Stack direction="row" spacing={2}>
         <TextField
           error={errors.firstName ? true : false}
@@ -146,12 +158,8 @@ export default function Form() {
           onClose={handleClose}
           anchorOrigin={{ vertical: "top", horizontal: "right" }}
         >
-          <Alert
-            onClose={handleClose}
-            severity="info"
-            sx={{ width: "100%" }}
-          >
-             Account created successfully
+          <Alert onClose={handleClose} severity="info" sx={{ width: "100%" }}>
+            Account created successfully
           </Alert>
         </Snackbar>
       </Box>

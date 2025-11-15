@@ -1,22 +1,32 @@
+/**
+ * Summary Card
+ * ------------
+ * Compact dashboard card combining an icon, text metrics,
+ * and a small donut chart to visualize proportional data.
+ */
+
+import React from "react";
 import { Box, Paper, Stack, Typography, useTheme } from "@mui/material";
 import { ResponsivePie } from "@nivo/pie";
-import React from "react";
 
-export default function Card({ icon, title, subTitle, increase, data ,scheme}) {
+export default function Card({ icon, title, subTitle, increase, data, scheme }) {
   const mui = useTheme();
   const lineColor = mui.palette.divider;
   const textPrimary = mui.palette.text.primary;
+
   return (
     <Paper
       sx={{
         flexGrow: 1,
-        minWidth: "333px",
+        flexBasis: { xs: "100%", sm: "48%", md: "24%" },
+        minWidth: { xs: "100%", sm: 260, md: 300 },
         p: 1.5,
         display: "flex",
         justifyContent: "space-between",
+        alignItems: "center",
       }}
     >
-      <Stack gap={1}>
+      <Stack gap={0.5}>
         {icon}
         <Typography variant="body2" sx={{ fontSize: "13px" }}>
           {title}
@@ -25,14 +35,13 @@ export default function Card({ icon, title, subTitle, increase, data ,scheme}) {
           {subTitle}
         </Typography>
       </Stack>
+
       <Stack alignItems={"center"}>
         <Box height={"70px"} width={"80px"}>
-          <ResponsivePie /* or Pie for fixed dimensions */
+          <ResponsivePie
             data={data}
             theme={{
               background: "transparent",
-
-
               tooltip: {
                 container: {
                   background: mui.palette.background.paper,

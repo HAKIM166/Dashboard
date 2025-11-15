@@ -1,3 +1,11 @@
+/**
+ * SideBar Component
+ * -----------------
+ * Responsive navigation drawer used across the application.
+ * Supports both a permanent mini-variant on desktop and
+ * a temporary overlay drawer on mobile devices.
+ */
+
 import React, { useEffect, useState } from "react";
 import { styled, useTheme } from "@mui/material/styles";
 import {
@@ -10,7 +18,9 @@ import {
   ListItemIcon,
   ListItemText,
   Drawer as MuiDrawer,
+  Tooltip,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
 import {
   ChevronLeft as ChevronLeftIcon,
@@ -18,7 +28,6 @@ import {
 } from "@mui/icons-material";
 import { useNavigate, useLocation } from "react-router-dom";
 
-// الأيقونات
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
 import ContactsOutlinedIcon from "@mui/icons-material/ContactsOutlined";
@@ -42,6 +51,7 @@ const openedMixin = (theme) => ({
   }),
   overflowX: "hidden",
 });
+
 const closedMixin = (theme) => ({
   transition: theme.transitions.create("width", {
     easing: theme.transitions.easing.sharp,
@@ -72,7 +82,6 @@ const Drawer = styled(MuiDrawer, {
     : { ...closedMixin(theme), "& .MuiDrawer-paper": closedMixin(theme) }),
 }));
 
-// Placeholder داخلي (SVG inline بدون أي طلبات شبكة)
 const INLINE_PLACEHOLDER =
   "data:image/svg+xml;utf8," +
   encodeURIComponent(`
@@ -88,7 +97,6 @@ const INLINE_PLACEHOLDER =
   </svg>
 `);
 
-// قراءة مبدئية آمنة من localStorage (مرة واحدة)
 function readUserFromLS() {
   try {
     const p = JSON.parse(localStorage.getItem("profile_user") || "{}");
@@ -104,43 +112,61 @@ function readUserFromLS() {
 
 export default function SideBar({ open, handleDrawerClose }) {
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
-  // حالة واحدة للـuser تُقرأ مرة واحدة
   const [user, setUser] = useState(() => readUserFromLS());
-  // الصورة تتحدد من user فورًا + placeholder داخلي
   const [avatarSrc, setAvatarSrc] = useState(
     () => user.avatar || INLINE_PLACEHOLDER
   );
 
-  // استماع لتحديثات البيانات (بين التبويبات أو من صفحة البروفايل)
   useEffect(() => {
     const handleStorage = () => {
       const next = readUserFromLS();
       setUser(next);
       setAvatarSrc(next.avatar || INLINE_PLACEHOLDER);
     };
+
     window.addEventListener("storage", handleStorage);
     window.addEventListener("profile_user_updated", handleStorage);
+
     return () => {
       window.removeEventListener("storage", handleStorage);
       window.removeEventListener("profile_user_updated", handleStorage);
     };
   }, []);
 
-  // القوائم
+  const closeDrawer = () => {
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+    if (typeof handleDrawerClose === "function") {
+      handleDrawerClose();
+    }
+  };
+
   const Array1 = [
     { text: "Dashboard", icon: <HomeOutlinedIcon />, path: "/" },
     { text: "Manage Team", icon: <PeopleOutlinedIcon />, path: "/team" },
-    { text: "Contacts Information", icon: <ContactsOutlinedIcon />, path: "/contacts" },
-    { text: "Invoices Balances", icon: <ReceiptOutlinedIcon />, path: "/invoices" },
+    {
+      text: "Contacts Information",
+      icon: <ContactsOutlinedIcon />,
+      path: "/contacts",
+    },
+    {
+      text: "Invoices Balances",
+      icon: <ReceiptOutlinedIcon />,
+      path: "/invoices",
+    },
   ];
+
   const Array2 = [
     { text: "Profile Form", icon: <PersonOutlinedIcon />, path: "/form" },
     { text: "Calendar", icon: <CalendarTodayOutlinedIcon />, path: "/calendar" },
     { text: "FAQ Page", icon: <HelpOutlineOutlinedIcon />, path: "/faq" },
   ];
+
   const Array3 = [
     { text: "Bar Chart", icon: <BarChartOutlinedIcon />, path: "/bar" },
     { text: "Pie Chart", icon: <PieChartOutlinedIcon />, path: "/pie" },
@@ -148,7 +174,6 @@ export default function SideBar({ open, handleDrawerClose }) {
     { text: "Geography Chart", icon: <MapOutlinedIcon />, path: "/geography" },
   ];
 
-  // بسّطت المنطق شوية
   const isActive = (path) =>
     pathname === path || pathname.startsWith(path + "/");
 
@@ -157,44 +182,56 @@ export default function SideBar({ open, handleDrawerClose }) {
       const active = isActive(item.path);
       return (
         <ListItem key={item.path} disablePadding sx={{ display: "block" }}>
-          <ListItemButton
-            onClick={() => navigate(item.path)}
-            selected={active}
-            sx={{
-              minHeight: 48,
-              justifyContent: open ? "initial" : "center",
-              px: 2.5,
-              ...(active && {
-                bgcolor: alpha(theme.palette.primary.main, 0.2),
-                backdropFilter: "blur(6px)",
-                "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-                  color: theme.palette.primary.light,
-                },
-              }),
-            }}
-          >
-            <ListItemIcon
-              sx={{ minWidth: 0, mr: open ? 3 : "auto", justifyContent: "center" }}
+          <Tooltip title={item.text} placement="left" disableHoverListener={open}>
+            <ListItemButton
+              onClick={() => {
+                navigate(item.path);
+                if (isMobile) closeDrawer();
+              }}
+              selected={active}
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? "initial" : "center",
+                px: 2.5,
+                ...(active && {
+                  bgcolor: alpha(theme.palette.primary.main, 0.2),
+                  backdropFilter: "blur(6px)",
+                  "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
+                    color: theme.palette.primary.light,
+                  },
+                }),
+              }}
             >
-              {item.icon}
-            </ListItemIcon>
-            <ListItemText primary={item.text} sx={{ opacity: open ? 1 : 0 }} />
-          </ListItemButton>
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : "auto",
+                  justifyContent: "center",
+                }}
+              >
+                {item.icon}
+              </ListItemIcon>
+              <ListItemText primary={item.text} sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+          </Tooltip>
         </ListItem>
       );
     });
 
-  return (
-    <Drawer variant="permanent" open={open}>
+  const drawerContent = (
+    <>
       <DrawerHeader>
-        <IconButton onClick={handleDrawerClose} aria-label="close sidebar">
-          {theme.direction === "rtl" ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+        <IconButton onClick={closeDrawer} aria-label="close sidebar">
+          {theme.direction === "rtl" ? (
+            <ChevronRightIcon />
+          ) : (
+            <ChevronLeftIcon />
+          )}
         </IconButton>
       </DrawerHeader>
 
       <Divider />
 
-      {/* صورة واسم/دور المستخدم (ديناميكيين) */}
       <Avatar
         sx={{
           mx: "auto",
@@ -209,14 +246,19 @@ export default function SideBar({ open, handleDrawerClose }) {
         alt={user.name}
         src={avatarSrc}
         imgProps={{
-          // eager لأن الأفاتار فوق-fold غالبًا؛ لو عايز lazy ارجعه
           loading: "eager",
           onError: () => setAvatarSrc(INLINE_PLACEHOLDER),
         }}
-        onClick={() => navigate("/profile")}
+        onClick={() => {
+          navigate("/profile");
+          if (isMobile) closeDrawer();
+        }}
       />
 
-      <Typography align="center" sx={{ fontSize: open ? 17 : 0, transition: "0.25s" }}>
+      <Typography
+        align="center"
+        sx={{ fontSize: open ? 17 : 0, transition: "0.25s" }}
+      >
         {user.name}
       </Typography>
 
@@ -237,6 +279,56 @@ export default function SideBar({ open, handleDrawerClose }) {
       <List>{renderMenu(Array2)}</List>
       <Divider />
       <List>{renderMenu(Array3)}</List>
+    </>
+  );
+
+  // Ensure focus is not trapped inside a closed drawer or modal
+  useEffect(() => {
+    if (!open) {
+      const activeEl = document.activeElement;
+      if (activeEl instanceof HTMLElement) {
+        if (
+          activeEl.closest(".MuiDrawer-root") ||
+          activeEl.closest(".MuiModal-root")
+        ) {
+          activeEl.blur();
+        }
+      }
+    }
+  }, [open]);
+
+  // Mobile: temporary overlay drawer
+  if (isMobile) {
+    return (
+      <MuiDrawer
+        variant="temporary"
+        anchor="left"
+        open={open}
+        onClose={closeDrawer}
+        ModalProps={{ keepMounted: true }}
+        sx={{
+          display: { xs: "block", sm: "none" },
+          "& .MuiDrawer-paper": {
+            width: drawerWidth,
+            boxSizing: "border-box",
+          },
+        }}
+      >
+        {drawerContent}
+      </MuiDrawer>
+    );
+  }
+
+  // Desktop: permanent mini-variant drawer
+  return (
+    <Drawer
+      variant="permanent"
+      open={open}
+      sx={{
+        display: { xs: "none", sm: "block" },
+      }}
+    >
+      {drawerContent}
     </Drawer>
   );
 }

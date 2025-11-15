@@ -1,3 +1,10 @@
+/**
+ * Calendar Page
+ * -------------
+ * FullCalendar integration with localStorage persistence, theme awareness,
+ * and a sidebar listing all events alongside the main calendar view.
+ */
+
 import React, { useEffect, useMemo, useState } from "react";
 import { formatDate } from "@fullcalendar/core";
 import FullCalendar from "@fullcalendar/react";

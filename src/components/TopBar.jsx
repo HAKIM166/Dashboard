@@ -1,18 +1,22 @@
+/**
+ * TopBar Component
+ * ----------------
+ * Application top navigation bar with search, sidebar toggle,
+ * and quick access actions (theme switcher, notifications, settings, profile).
+ */
+
 import React from "react";
 import { styled, alpha, useTheme } from "@mui/material/styles";
 import {
   AppBar as MuiAppBar,
   Toolbar,
   IconButton,
-  Typography,
   InputBase,
   Stack,
   Box,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
-// ICONS
-import { Alarm } from "@mui/icons-material";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
@@ -38,6 +42,7 @@ const AppBar = styled(MuiAppBar, {
     }),
   }),
 }));
+
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: theme.shape.borderRadius,
@@ -63,11 +68,11 @@ const SearchIconWrapper = styled("div")(({ theme }) => ({
   alignItems: "center",
   justifyContent: "center",
 }));
+
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
   color: "inherit",
   "& .MuiInputBase-input": {
     padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
     transition: theme.transitions.create("width"),
     width: "100%",
@@ -77,8 +82,15 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-export default function TopBar({ open, handleDrawerOpen, setMode}) {
+export default function TopBar({ open, handleDrawerOpen, setMode }) {
   const theme = useTheme();
+
+  const toggleColorMode = () => {
+    const nextMode = theme.palette.mode === "dark" ? "light" : "dark";
+    localStorage.setItem("currentMode", nextMode);
+    setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
+  };
+
   return (
     <AppBar position="fixed" open={open}>
       <Toolbar>
@@ -94,6 +106,7 @@ export default function TopBar({ open, handleDrawerOpen, setMode}) {
         >
           <MenuIcon />
         </IconButton>
+
         <Search>
           <SearchIconWrapper>
             <SearchIcon />
@@ -103,43 +116,27 @@ export default function TopBar({ open, handleDrawerOpen, setMode}) {
             inputProps={{ "aria-label": "search" }}
           />
         </Search>
-        <Box flexGrow={1} />
-        <Stack direction="row">
-          {theme.palette.mode === "light" ? (
-            <IconButton
-              onClick={() => {
-                localStorage.setItem("currentMode",theme.palette.mode === "dark"?"light":"dark")
-                setMode((prevMode) =>
-                  prevMode === "light" ? "dark" : "light"
-                );
-              }}
-              color="inherit"
-              aria-label="add an alarm"
-            >
-              <LightModeOutlinedIcon />
-            </IconButton>
-          ) : (
-            <IconButton
-              onClick={() => {
-                localStorage.setItem("currentMode",theme.palette.mode === "dark"?"light":"dark")
-                setMode((prevMode) =>
-                  prevMode === "light" ? "dark" : "light"
-                );
-              }}
-              color="inherit"
-              aria-label="add an alarm"
-            >
-              <DarkModeOutlinedIcon />
-            </IconButton>
-          )}
 
-          <IconButton color="inherit" aria-label="add an alarm">
+        <Box flexGrow={1} />
+
+        <Stack direction="row">
+          <IconButton onClick={toggleColorMode} color="inherit">
+            {theme.palette.mode === "light" ? (
+              <LightModeOutlinedIcon />
+            ) : (
+              <DarkModeOutlinedIcon />
+            )}
+          </IconButton>
+
+          <IconButton color="inherit">
             <NotificationsNoneIcon />
           </IconButton>
-          <IconButton color="inherit" aria-label="add an alarm">
+
+          <IconButton color="inherit">
             <SettingsOutlinedIcon />
           </IconButton>
-          <IconButton color="inherit" aria-label="add an alarm">
+
+          <IconButton color="inherit">
             <PersonOutlineIcon />
           </IconButton>
         </Stack>
