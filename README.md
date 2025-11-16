@@ -1,15 +1,24 @@
 # 🧱 Dashboard – React Admin Panel (Vite + MUI + Router)
 
-A production-grade, modular, and scalable **React Admin Dashboard** built using:
+A production-grade, modular, and scalable **React Admin Dashboard** built with:
 
 - **React 18**
 - **Vite**
 - **Material UI (MUI v5)**
-- **React Router**
-- **Local Storage Persistence**
-- **Dynamic Theming + Component Isolation**
+- **React Router v7**
+- **Nivo Charts**
+- **FullCalendar**
+- **React Hook Form**
+- **date-fns**
 
-Designed as a clean, maintainable front-end architecture suitable for real-world dashboards.
+Designed as a clean, maintainable front-end architecture suitable for real-world dashboards and portfolio-ready production demos.
+
+---
+
+## 🔗 Live Demo & Repository
+
+- **Live Demo:** 👉 https://hakim166.github.io/Dashboard/
+- **Source Code:** 📦 https://github.com/HAKIM166/Dashboard
 
 ---
 
@@ -25,52 +34,72 @@ Designed as a clean, maintainable front-end architecture suitable for real-world
   - Tables  
   - Utilities
 
-- Reusable UI components (Sidebar, TopBar, Header)
-- Centralized theming with light/dark mode
-- Dynamic routing
+- Reusable UI components (**Sidebar, TopBar, Header**).
+- Centralized theming with **light/dark mode**.
+- Hash-based routing configured for GitHub Pages.
 
 ---
 
 ### 👤 Profile System
-- Full user profile panel
-- Editable:
+
+- Full **user profile panel** with editable:
   - Name
   - Email
   - Phone
-- **Local Avatar Upload** (File → Base64 → Persist in localStorage)
-- Real-time "Last Login" calculation
-- Preferences stored locally:
+- **Local Avatar Upload** (File → Base64 → persisted in localStorage).
+- Real-time “Last Login” calculation.
+- User preferences stored locally:
   - Email notifications
   - 2FA toggle
   - Autosave toggle
 
 ---
 
-## 📊 Analytical Views
+### 📊 Analytical Views
+
 Includes:
-- Bar Chart
-- Line Chart
-- Pie Chart
-- Geography Heatmap
-- KPI Cards
-- Modular dashboard rows
+- KPI cards and modular dashboard rows.
+- Interactive analytical charts:
+  - **Bar Chart**
+  - **Line Chart**
+  - **Pie Chart**
+  - **Geography Heatmap**
 
 ---
 
-## 📅 Productivity Pages
-- Calendar page  
-- Contacts table  
-- Team roles page  
-- Invoices table  
-- FAQ system  
+### 📅 Productivity Pages
 
-All pages wrapped in a consistent layout shell.
+- **Calendar page** with FullCalendar:
+  - Day / Week / Month views
+  - Interactive events
+
+- **Contacts table** (DataGrid)  
+- **Team management** with roles and permissions  
+- **Invoices table** with balances  
+- **FAQ system** with expandable items  
+
+All pages share a **consistent layout shell** (TopBar + SideBar + Main Content).
+
+---
+
+## 🧭 Pages Overview
+
+- `/` – **Dashboard**  
+- `/profile` – Profile details, avatar upload, and preferences  
+- `/form` – Form powered by React Hook Form  
+- `/team` – Team roles & access levels  
+- `/contacts` – Contacts list  
+- `/invoices` – Invoices balances  
+- `/calendar` – Calendar & events  
+- `/faq` – FAQ page  
+- `/bar`, `/pie`, `/line`, `/geography` – Analytical charts  
+- `*` – NotFound fallback page  
 
 ---
 
 ## 📁 Project Structure
 
-```
+
 src/
 │── App.jsx
 │── main.jsx
@@ -137,10 +166,47 @@ src/
 │
 └── notFound/
 └── NotFound.jsx
-```
 
--------------------------
-# 💻 Tech Stack:
-![CSS3](https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white) ![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white) ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54) ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white) ![Vercel](https://img.shields.io/badge/vercel-%23000000.svg?style=for-the-badge&logo=vercel&logoColor=white) ![Netlify](https://img.shields.io/badge/netlify-%23000000.svg?style=for-the-badge&logo=netlify&logoColor=#00C7B7) ![Codeberg](https://img.shields.io/badge/Codeberg-2185D0?style=for-the-badge&logo=Codeberg&logoColor=white) ![Bootstrap](https://img.shields.io/badge/bootstrap-%238511FA.svg?style=for-the-badge&logo=bootstrap&logoColor=white) ![Next JS](https://img.shields.io/badge/Next-black?style=for-the-badge&logo=next.js&logoColor=white) ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB) ![React Router](https://img.shields.io/badge/React_Router-CA4245?style=for-the-badge&logo=react-router&logoColor=white) ![React Hook Form](https://img.shields.io/badge/React%20Hook%20Form-%23EC5990.svg?style=for-the-badge&logo=reacthookform&logoColor=white) ![Redux](https://img.shields.io/badge/redux-%23593d88.svg?style=for-the-badge&logo=redux&logoColor=white) ![Context-API](https://img.shields.io/badge/Context--Api-000000?style=for-the-badge&logo=react) ![Chart.js](https://img.shields.io/badge/chart.js-F5788D.svg?style=for-the-badge&logo=chart.js&logoColor=white) ![SASS](https://img.shields.io/badge/SASS-hotpink.svg?style=for-the-badge&logo=SASS&logoColor=white) ![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white) ![Styled Components](https://img.shields.io/badge/styled--components-DB7093?style=for-the-badge&logo=styled-components&logoColor=white) ![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white) ![Adobe](https://img.shields.io/badge/adobe-%23FF0000.svg?style=for-the-badge&logo=adobe&logoColor=white)
+---
 
+## 💻 Tech Stack (Used in This Project)
 
+**Core:**
+- React 18  
+- Vite  
+- React Router v7  
+
+**UI & Layout:**
+- Material UI (MUI v5)  
+- MUI Icons  
+- MUI Data Grid  
+- Custom theming with light/dark mode  
+
+**Charts & Maps:**
+- @nivo/bar  
+- @nivo/line  
+- @nivo/pie  
+- @nivo/geo  
+
+**Calendar & Dates:**
+- FullCalendar (core, daygrid, timegrid, interaction)  
+- date-fns  
+
+**Forms & State:**
+- React Hook Form  
+- Local Storage persistence  
+
+**Tooling:**
+- ESLint  
+- eslint-plugin-react-hooks  
+- Vite React plugin  
+
+---
+
+## 🚀 Getting Started
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/HAKIM166/Dashboard.git
+cd Dashboard
