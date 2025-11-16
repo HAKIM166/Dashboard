@@ -99,7 +99,7 @@ All pages share a **consistent layout shell** (TopBar + SideBar + Main Content).
 
 ## 📁 Project Structure
 
-
+---
 src/
 │── App.jsx
 │── main.jsx
