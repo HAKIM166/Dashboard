@@ -97,7 +97,10 @@ All pages share a **consistent layout shell** (TopBar + SideBar + Main Content).
 
 ---
 
-## 📁 Project Structure
+<details>
+<summary><strong>📁 Project Structure (Click to expand)</strong></summary>
+
+
 
 ```
 src/
@@ -167,6 +170,9 @@ src/
 └── notFound/
     └── NotFound.jsx
 ```
+
+</details>
+
 
 ---
 
