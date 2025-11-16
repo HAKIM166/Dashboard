@@ -99,7 +99,7 @@ All pages share a **consistent layout shell** (TopBar + SideBar + Main Content).
 
 ## 📁 Project Structure
 
----
+```
 src/
 │── App.jsx
 │── main.jsx
@@ -107,101 +107,66 @@ src/
 │── index.css
 │
 ├── components/
-│ ├── Header.jsx
-│ ├── SideBar.jsx
-│ └── TopBar.jsx
+│   ├── Header.jsx
+│   ├── SideBar.jsx
+│   └── TopBar.jsx
 │
 ├── pages/
-│ ├── dashboard/
-│ │ ├── Dashboard.jsx
-│ │ ├── Card.jsx
-│ │ ├── Row1.jsx
-│ │ ├── Row2.jsx
-│ │ ├── Row3.jsx
-│ │ └── data.js
-│ │
-│ ├── profile/
-│ │ └── Profile.jsx
-│ │
-│ ├── team/
-│ │ ├── Team.jsx
-│ │ └── data.js
-│ │
-│ ├── contacts/
-│ │ ├── Contacts.jsx
-│ │ └── data.js
-│ │
-│ ├── invoices/
-│ │ ├── Invoices.jsx
-│ │ └── data.js
-│ │
-│ ├── barChart/
-│ │ ├── Bar.jsx
-│ │ └── BarChart.jsx
-│ │
-│ ├── lineChart/
-│ │ ├── Line.jsx
-│ │ └── LineChart.jsx
-│ │
-│ ├── pieChart/
-│ │ ├── Pie.jsx
-│ │ └── PieChart.jsx
-│ │
-│ ├── geography/
-│ │ ├── Geo.jsx
-│ │ ├── Geography.jsx
-│ │ ├── data.js
-│ │ └── world_countries.jsx
-│ │
-│ ├── calendar/
-│ │ ├── Calendar.jsx
-│ │ ├── calendar.css
-│ │ └── EventUtils.js
-│ │
-│ ├── FAQ/
-│ │ └── FAQ.jsx
-│ │
-│ └── form/
-│ └── Form.jsx
+│   ├── dashboard/
+│   │   ├── Dashboard.jsx
+│   │   ├── Card.jsx
+│   │   ├── Row1.jsx
+│   │   ├── Row2.jsx
+│   │   ├── Row3.jsx
+│   │   └── data.js
+│   │
+│   ├── profile/
+│   │   └── Profile.jsx
+│   │
+│   ├── team/
+│   │   ├── Team.jsx
+│   │   └── data.js
+│   │
+│   ├── contacts/
+│   │   ├── Contacts.jsx
+│   │   └── data.js
+│   │
+│   ├── invoices/
+│   │   ├── Invoices.jsx
+│   │   └── data.js
+│   │
+│   ├── barChart/
+│   │   ├── Bar.jsx
+│   │   └── BarChart.jsx
+│   │
+│   ├── lineChart/
+│   │   ├── Line.jsx
+│   │   └── LineChart.jsx
+│   │
+│   ├── pieChart/
+│   │   ├── Pie.jsx
+│   │   └── PieChart.jsx
+│   │
+│   ├── geography/
+│   │   ├── Geo.jsx
+│   │   ├── Geography.jsx
+│   │   ├── data.js
+│   │   └── world_countries.jsx
+│   │
+│   ├── calendar/
+│   │   ├── Calendar.jsx
+│   │   ├── calendar.css
+│   │   └── EventUtils.js
+│   │
+│   ├── FAQ/
+│   │   └── FAQ.jsx
+│   │
+│   └── form/
+│       └── Form.jsx
 │
 └── notFound/
-└── NotFound.jsx
-
----
-
-## 💻 Tech Stack (Used in This Project)
-
-**Core:**
-- React 18  
-- Vite  
-- React Router v7  
-
-**UI & Layout:**
-- Material UI (MUI v5)  
-- MUI Icons  
-- MUI Data Grid  
-- Custom theming with light/dark mode  
-
-**Charts & Maps:**
-- @nivo/bar  
-- @nivo/line  
-- @nivo/pie  
-- @nivo/geo  
-
-**Calendar & Dates:**
-- FullCalendar (core, daygrid, timegrid, interaction)  
-- date-fns  
-
-**Forms & State:**
-- React Hook Form  
-- Local Storage persistence  
-
-**Tooling:**
-- ESLint  
-- eslint-plugin-react-hooks  
-- Vite React plugin  
-
----
+    └── NotFound.jsx
+```
 
 ## 🚀 Getting Started
 
